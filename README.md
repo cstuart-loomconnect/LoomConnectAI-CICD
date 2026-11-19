@@ -20,7 +20,7 @@ Every `uses:` and `repository:` reference should use the `LoomConnectAI` and `Lo
 | Check | Fails when |
 |---|---|
 | Prettier + ESLint | Files aren't formatted, or LWC/Aura JavaScript has lint errors. |
-| LWC Jest tests | A Jest test in an LWC `__tests__` folder fails. Runs the calling repo's own `sfdx-lwc-jest` with coverage, attached as `lwc-jest-coverage`. A repo with no tests yet passes. |
+| LWC Jest tests | A Jest test in an LWC `__tests__` folder fails. Runs the calling repo's own `sfdx-lwc-jest` with coverage, attached as `lwc-jest-coverage`. Skipped when the repo has no LWC Jest tests. |
 | SLDS Validator | LWC HTML/CSS breaks SLDS rules. The linter version is pinned in `SLDS_LINTER_VERSION`; bump it deliberately. |
 | Salesforce Code Analyzer | A High (severity 2) or worse finding from the `Recommended` rules, including CRUD/FLS and SOQL injection. |
 | Naming conventions | An API name has underscores, spaces or the wrong case. |
