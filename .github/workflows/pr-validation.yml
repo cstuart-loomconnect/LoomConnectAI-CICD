@@ -57,6 +57,7 @@ jobs:
     outputs:
       has_apex: ${{ steps.scan.outputs.has_apex }}
       has_lwc: ${{ steps.scan.outputs.has_lwc }}
+      has_lwc_tests: ${{ steps.scan.outputs.has_lwc_tests }}
       has_source: ${{ steps.scan.outputs.has_source }}
       has_devhub: ${{ steps.devhub.outputs.has_devhub }}
     steps:
@@ -67,10 +68,12 @@ jobs:
         run: |
           apex=$(find "$SRC" -name '*.cls' -o -name '*.trigger' | head -1)
           lwc=$(find "$SRC" -path '*/lwc/*' -name '*.js' -not -path '*/__tests__/*' | head -1)
+          lwc_tests=$(find "$SRC" -path '*/lwc/*/__tests__/*' -name '*.test.js' | head -1)
           source=$(find "$SRC" -type f -not -name '.gitkeep' | head -1)
           {
             echo "has_apex=$([ -n "$apex" ] && echo true || echo false)"
             echo "has_lwc=$([ -n "$lwc" ] && echo true || echo false)"
+            echo "has_lwc_tests=$([ -n "$lwc_tests" ] && echo true || echo false)"
             echo "has_source=$([ -n "$source" ] && echo true || echo false)"
           } >> "$GITHUB_OUTPUT"
       # Secrets cannot be read in a job's if, so whether the Dev Hub login was passed in is worked out here.
@@ -101,11 +104,11 @@ jobs:
       - run: npx eslint "${{ inputs.source-dir }}/**/{aura,lwc}/**/*.js" --no-error-on-unmatched-pattern
 
   # Runs the LWC Jest tests (__tests__ folders) through the repo's own sfdx-lwc-jest, with coverage.
-  # A repo with components but no tests yet passes, so adding this job breaks no caller.
+  # Skipped when the repo has no LWC Jest tests, so a repo without sfdx-lwc-jest installed still passes.
   lwc-jest:
     name: LWC Jest tests
     needs: detect
-    if: needs.detect.outputs.has_lwc == 'true'
+    if: needs.detect.outputs.has_lwc_tests == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
